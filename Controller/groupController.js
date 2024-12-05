@@ -15,6 +15,8 @@ export const CreateGroup = async (req, res) => {
       return res.status(500).json({ message: "Something went wrong" });
     }
 
+    // add this creator to that group as memebr and then add group to user list
+    await newGroup.Allusers.push({ userId: createdby, role: "admin" });
     await Creator.AllGroups.push(newGroup._id);
     await Creator.save();
     return res

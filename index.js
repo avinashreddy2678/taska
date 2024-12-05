@@ -8,6 +8,7 @@ import { AuthRoute } from "./routes/authRoute.js";
 import { ProductRouter } from "./routes/productRoute.js";
 import { GroupRouter } from "./routes/groupRouter.js";
 import { VerifyUser } from "./middleware/verifyUser.js";
+import { fcmRouter } from "./routes/fcmRoute.js";
 const app = express();
 app.use(Cors());
 app.use(helmet());
@@ -27,6 +28,7 @@ mongoose
 app.use("/", AuthRoute);
 app.use("/product", VerifyUser, ProductRouter);
 app.use("/group", VerifyUser, GroupRouter);
+app.use("/fcm", VerifyUser, fcmRouter);
 
 app.listen(4000, () => {
   console.log("Server is running");
