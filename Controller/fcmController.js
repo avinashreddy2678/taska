@@ -14,7 +14,7 @@ export const SaveFcmToken = async (req, res) => {
         .status(401)
         .json({ message: "Unauthorized: No token provided" });
     }
-
+// get only id
     const userDetails = await getUserFromToken(token);
     // console.log(userDetails, "user");
     if (!userDetails) {
@@ -29,7 +29,7 @@ export const SaveFcmToken = async (req, res) => {
     if (!userWithToken) {
       // Create a new record if none exists
       await FcmTokenModel.create({
-        userId: userDetails._id,
+        userId: userDetails.id,
         fcmToken,
         lastUpdated: new Date(),
       });
@@ -56,6 +56,7 @@ export const SaveFcmToken = async (req, res) => {
 export const getUserFromToken = async (token) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECREAT);
+    // console.log(decoded);
     return decoded; // This will contain user details if verification is successful
   } catch (error) {
     console.error("Error decoding token:", error);
