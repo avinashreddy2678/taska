@@ -15,8 +15,8 @@ export const SaveFcmToken = async (req, res) => {
         .json({ message: "Unauthorized: No token provided" });
     }
 
-    const userDetails = await getUserFromToken(token, process.env.JWT_SECREAT);
-
+    const userDetails = await getUserFromToken(token);
+    // console.log(userDetails, "user");
     if (!userDetails) {
       return res.status(401).json({ message: "Unauthorized: Invalid token" });
     }
@@ -55,7 +55,7 @@ export const SaveFcmToken = async (req, res) => {
 // Function to decode and verify the JWT
 export const getUserFromToken = async (token) => {
   try {
-    const decoded = jwt.verify(token);
+    const decoded = jwt.verify(token, process.env.JWT_SECREAT);
     return decoded; // This will contain user details if verification is successful
   } catch (error) {
     console.error("Error decoding token:", error);
