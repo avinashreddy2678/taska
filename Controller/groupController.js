@@ -1,5 +1,7 @@
+import FcmTokenModel from "../models/FcmTokenModel.js";
 import GroupModel from "../models/GroupModel.js";
 import UserModel from "../models/UserModel.js";
+import { sendNotification } from "./fcmController.js";
 
 export const CreateGroup = async (req, res) => {
   try {
@@ -18,6 +20,7 @@ export const CreateGroup = async (req, res) => {
     // add this creator to that group as memebr and then add group to user list
     await newGroup.Allusers.push({ userId: createdby, role: "admin" });
     await Creator.AllGroups.push(newGroup._id);
+    await newGroup.save();
     await Creator.save();
     return res
       .status(201)
@@ -42,7 +45,6 @@ export const AddPeopletoGroup = async (req, res) => {
     const userAlreadyinGroup = GroupExists.Allusers.some(
       (user) => user?.userId?.toString() === userId
     );
-    console.log(GroupExists.Allusers[0], userId);
     if (userAlreadyinGroup) {
       return res.json({ message: "User Already in Group" });
     }
@@ -51,6 +53,18 @@ export const AddPeopletoGroup = async (req, res) => {
 
     await userExists.AllGroups.push(groupId);
     await userExists.save();
+
+    const userToken = await FcmTokenModel.findOne({ userId });
+    console.log(userToken)
+    if (userToken.fcmToken) {
+      const fcmTokens = [userToken.fcmToken];
+      await sendNotification(
+        "New Group",
+        `You are added in ${GroupExists.GroupName}`,
+        fcmTokens
+      );
+    }
+
     return res.status(201).json({
       message: "User added to the group successfully",
       group: GroupExists,

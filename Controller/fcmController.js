@@ -14,7 +14,7 @@ export const SaveFcmToken = async (req, res) => {
         .status(401)
         .json({ message: "Unauthorized: No token provided" });
     }
-// get only id
+    // get only id
     const userDetails = await getUserFromToken(token);
     // console.log(userDetails, "user");
     if (!userDetails) {
@@ -64,17 +64,17 @@ export const getUserFromToken = async (token) => {
   }
 };
 
-export const sendNotification = async (title, body, tokens) => {
+export const sendNotification = async (title, body, fcmTokens) => {
+  console.log(title,body,fcmTokens)
   const message = {
     notification: {
       title: title,
       body: body,
     },
-    token: tokens,
+    tokens: fcmTokens,
   };
   try {
     const res = await admin.messaging().sendEachForMulticast(message);
-    console.log(res);
     return res;
   } catch (error) {
     console.log(error);

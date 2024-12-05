@@ -58,13 +58,21 @@ export const Signin = async (req, res) => {
       return res.status(401).json({ message: "Password does not match" });
     }
 
+    const groupDetails = await GroupModel.find({
+      _id: { $in: userExists.AllGroups },
+    }).populate({ path: "Allusers.userId", select: "-password" });
+    const userWithGroups = {
+      ...userExists.toObject(),
+      AllGroups: groupDetails,
+    };
+
     let token = jwt.sign({ id: userExists._id }, process.env.JWT_SECREAT, {
-      expiresIn: "1h",
+      expiresIn: "1d",
     });
 
     return res
       .status(200)
-      .json({ message: "Signin successful", user: userExists, token });
+      .json({ message: "Signin successful", user: userWithGroups, token });
   } catch (error) {
     console.error("Error in Signin:", error);
     return res.status(500).json({ message: "Something went wrong" });
