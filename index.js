@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import { AuthRoute } from "./routes/authRoute.js";
 import { ProductRouter } from "./routes/productRoute.js";
 import { GroupRouter } from "./routes/groupRouter.js";
+import { VerifyUser } from "./middleware/verifyUser.js";
 const app = express();
 app.use(Cors());
 app.use(helmet());
@@ -24,8 +25,8 @@ mongoose
   });
 
 app.use("/", AuthRoute);
-app.use("/product", ProductRouter);
-app.use("/group", GroupRouter);
+app.use("/product", VerifyUser, ProductRouter);
+app.use("/group", VerifyUser, GroupRouter);
 
 app.listen(4000, () => {
   console.log("Server is running");
