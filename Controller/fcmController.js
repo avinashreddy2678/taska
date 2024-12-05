@@ -1,9 +1,12 @@
 import jwt from "jsonwebtoken";
 import FcmTokenModel from "../models/FcmTokenModel.js";
 import admin from "../config/fcmAdmin.js";
+import dotenv from "dotenv";
+dotenv.config();
 export const SaveFcmToken = async (req, res) => {
   try {
     const { fcmToken } = req.body;
+
     const token = req.headers.authorization?.split(" ")[1];
 
     if (!token) {
@@ -12,7 +15,7 @@ export const SaveFcmToken = async (req, res) => {
         .json({ message: "Unauthorized: No token provided" });
     }
 
-    const userDetails = await getUserFromToken(token);
+    const userDetails = await getUserFromToken(token, process.env.JWT_SECREAT);
 
     if (!userDetails) {
       return res.status(401).json({ message: "Unauthorized: Invalid token" });
@@ -52,7 +55,7 @@ export const SaveFcmToken = async (req, res) => {
 // Function to decode and verify the JWT
 export const getUserFromToken = async (token) => {
   try {
-    const decoded = jwt.verify(token, "password");
+    const decoded = jwt.verify(token);
     return decoded; // This will contain user details if verification is successful
   } catch (error) {
     console.error("Error decoding token:", error);
