@@ -6,16 +6,18 @@ import { sendNotification } from "./fcmController.js";
 export const CreateGroup = async (req, res) => {
   try {
     const { GroupName, createdby } = req.body;
-    const newGroup = await GroupModel.create({
-      GroupName,
-      createdby,
-    });
-    await newGroup.save();
-    // save the group in users
     const Creator = await UserModel.findOne({ _id: createdby });
     if (!Creator) {
       return res.status(500).json({ message: "Something went wrong" });
     }
+    const newGroup = await GroupModel.create({
+      GroupName,
+      createdby,
+      creatorName: Creator.username,
+    });
+
+    await newGroup.save();
+    // save the group in users
 
     // add this creator to that group as memebr and then add group to user list
     await newGroup.Allusers.push({ userId: createdby, role: "admin" });
@@ -55,7 +57,7 @@ export const AddPeopletoGroup = async (req, res) => {
     await userExists.save();
 
     const userToken = await FcmTokenModel.findOne({ userId });
-    console.log(userToken)
+    console.log(userToken);
     if (userToken.fcmToken) {
       const fcmTokens = [userToken.fcmToken];
       await sendNotification(

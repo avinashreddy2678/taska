@@ -26,6 +26,7 @@ export const Signup = async (req, res) => {
       Allusers: [{ userId: newUser._id, role: "admin" }],
       createdby: newUser._id,
       createdAt: new Date(),
+      shareable:false
     });
 
     await CreateGroup.save();
@@ -47,32 +48,37 @@ export const Signin = async (req, res) => {
   const { email, password } = req.body;
   try {
     // Check if user exists
-    const userExists = await UserModel.findOne({ email });
+    const userExists = await UserModel.findOne({ email }).populate({
+      path: "AllGroups",
+      populate: {
+        path: "Allusers.userId",
+        select: "username _id",
+      },
+    });
     if (!userExists) {
       return res.status(404).json({ message: "User does not exist" });
     }
 
+    console.log(userExists);
     // Verify password (plaintext comparison for now)
     const verifyPassword = userExists.password === password;
     if (!verifyPassword) {
       return res.status(401).json({ message: "Password does not match" });
     }
 
-    const groupDetails = await GroupModel.find({
-      _id: { $in: userExists.AllGroups },
-    }).populate({ path: "Allusers.userId", select: "-password" });
-    const userWithGroups = {
-      ...userExists.toObject(),
-      AllGroups: groupDetails,
-    };
-
     let token = jwt.sign({ id: userExists._id }, process.env.JWT_SECREAT, {
       expiresIn: "1d",
     });
 
+    // removing password
+    const userWithoutPassword = {
+      ...userExists.toObject(),
+      password: undefined,
+    };
+
     return res
       .status(200)
-      .json({ message: "Signin successful", user: userWithGroups, token });
+      .json({ message: "Signin successful", user: userWithoutPassword, token });
   } catch (error) {
     console.error("Error in Signin:", error);
     return res.status(500).json({ message: "Something went wrong" });

@@ -22,6 +22,9 @@ const GroupSchema = mongoose.Schema({
     type: mongoose.Types.ObjectId,
     ref: "Users",
   },
+  creatorName: {
+    type: String,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -32,6 +35,10 @@ const GroupSchema = mongoose.Schema({
       ref: "Products",
     },
   ],
+  shareable: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 export default mongoose.models.Groups || mongoose.model("Groups", GroupSchema);

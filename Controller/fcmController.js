@@ -65,7 +65,7 @@ export const getUserFromToken = async (token) => {
 };
 
 export const sendNotification = async (title, body, fcmTokens) => {
-  console.log(title,body,fcmTokens)
+  console.log(title, body, fcmTokens);
   const message = {
     notification: {
       title: title,
