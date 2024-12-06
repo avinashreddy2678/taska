@@ -1,10 +1,15 @@
-import UserModel from "../models/UserModel";
+import UserModel from "../models/UserModel.js";
 export const searchUsers = async (req, res) => {
   try {
-    const { searchKey } = req.body;
-    const userList = await UserModel.find({
-      email: { $regex: searchKey, $options: "i" },
-    });
+    console.log(req.query);
+    const { useremail } = req.query;
+    console.log(useremail);
+    const userList = await UserModel.findOne(
+      {
+        email: useremail,
+      },
+      "_id username email"
+    );
 
     return res.json({ success: true, usersList: userList });
   } catch (error) {

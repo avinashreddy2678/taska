@@ -26,7 +26,7 @@ export const Signup = async (req, res) => {
       Allusers: [{ userId: newUser._id, role: "admin" }],
       createdby: newUser._id,
       createdAt: new Date(),
-      shareable:false
+      shareable: false,
     });
 
     await CreateGroup.save();
