@@ -76,3 +76,26 @@ export const AddPeopletoGroup = async (req, res) => {
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
+
+export const getUserDetailsfromGroup = async (req, res) => {
+  const { groupid, userid } = req.query;
+  try {
+    const GroupDetails = await GroupModel.findOne({ _id: groupid }).populate({
+      path: "Allusers.userId",
+      select: "-password -AllGroups -AllProducts",
+    });
+    if (!GroupDetails) {
+      return res.json({ message: "No Group Found" });
+    }
+
+    const UserInGroup = GroupDetails.Allusers.some(
+      (user) => user.userId._id.toString() == userid.toString()
+    );
+    if (!UserInGroup) {
+      return res.json({ message: "You have No Connection with this Group" });
+    }
+    return res.json({ message: "Group Details", GroupDetails: GroupDetails });
+  } catch (error) {
+    console.log(error);
+  }
+};

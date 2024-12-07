@@ -3,7 +3,6 @@ export const searchUsers = async (req, res) => {
   try {
     console.log(req.query);
     const { useremail } = req.query;
-    console.log(useremail);
     const userList = await UserModel.findOne(
       {
         email: useremail,
