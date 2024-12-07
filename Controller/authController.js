@@ -22,7 +22,7 @@ export const Signup = async (req, res) => {
     });
 
     const CreateGroup = await GroupModel.create({
-      GroupName: "Non-Group",
+      GroupName: "My-Personel Group",
       Allusers: [{ userId: newUser._id, role: "admin" }],
       createdby: newUser._id,
       createdAt: new Date(),
