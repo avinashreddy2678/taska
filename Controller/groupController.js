@@ -21,7 +21,10 @@ export const CreateGroup = async (req, res) => {
     // save the group in users
 
     // add this creator to that group as memebr and then add group to user list
-    await newGroup.Allusers.push({ userId: createdby, role: "admin" });
+    await newGroup.Allusers.push({
+      userId: { _id: createdby, username: Creator.username },
+      role: "admin",
+    });
     await Creator.AllGroups.push(newGroup._id);
     await newGroup.save();
     await Creator.save();
