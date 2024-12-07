@@ -19,18 +19,20 @@ export const CreateGroup = async (req, res) => {
 
     await newGroup.save();
     // save the group in users
-
+    const username = Creator.username;
     // add this creator to that group as memebr and then add group to user list
     await newGroup.Allusers.push({
-      userId: { _id: createdby, username: Creator.username },
+      userId: createdby,
       role: "admin",
     });
     await Creator.AllGroups.push(newGroup._id);
     await newGroup.save();
     await Creator.save();
-    return res
-      .status(201)
-      .json({ message: "new Group created", group: newGroup });
+    return res.status(201).json({
+      message: "new Group created",
+      group: newGroup,
+      username: username,
+    });
   } catch (error) {
     console.log(error);
   }
@@ -61,7 +63,7 @@ export const AddPeopletoGroup = async (req, res) => {
     await userExists.save();
 
     const userToken = await FcmTokenModel.findOne({ userId });
-    console.log(userToken);
+    // console.log(userToken);
     if (userToken.fcmToken) {
       const fcmTokens = [userToken.fcmToken];
       await sendNotification(
@@ -74,6 +76,7 @@ export const AddPeopletoGroup = async (req, res) => {
     return res.status(201).json({
       message: "User added to the group successfully",
       group: GroupExists,
+      username: userExists.username,
     });
   } catch (error) {
     console.log(error);
