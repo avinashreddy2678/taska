@@ -5,7 +5,7 @@ import { sendNotification } from "./fcmController.js";
 
 export const CreateGroup = async (req, res) => {
   try {
-    const { GroupName, createdby } = req.body;
+    const { GroupName, createdby, groupType } = req.body;
     const Creator = await UserModel.findOne({ _id: createdby });
     if (!Creator) {
       return res.status(500).json({ message: "Something went wrong" });
@@ -14,6 +14,7 @@ export const CreateGroup = async (req, res) => {
       GroupName,
       createdby,
       creatorName: Creator.username,
+      groupType,
     });
 
     await newGroup.save();

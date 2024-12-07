@@ -27,6 +27,7 @@ export const Signup = async (req, res) => {
       createdby: newUser._id,
       createdAt: new Date(),
       shareable: false,
+      groupType: "other",
     });
 
     await CreateGroup.save();
@@ -48,18 +49,20 @@ export const Signin = async (req, res) => {
   const { email, password } = req.body;
   try {
     // Check if user exists
-    const userExists = await UserModel.findOne({ email }).populate({
-      path: "AllGroups",
-      populate: {
-        path: "Allusers.userId",
-        select: "username _id",
-      },
-    });
+    const userExists = await UserModel.findOne({ email })
+      .populate({
+        path: "AllGroups",
+        populate: {
+          path: "Allusers.userId",
+          select: "username _id",
+        },
+      })
+      .populate("AllProducts");
     if (!userExists) {
       return res.status(404).json({ message: "User does not exist" });
     }
 
-    console.log(userExists);
+    // console.log(userExists);
     // Verify password (plaintext comparison for now)
     const verifyPassword = userExists.password === password;
     if (!verifyPassword) {

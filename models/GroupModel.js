@@ -39,6 +39,9 @@ const GroupSchema = mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  groupType: {
+    type: String,
+  },
 });
 
 export default mongoose.models.Groups || mongoose.model("Groups", GroupSchema);
