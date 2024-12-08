@@ -6,7 +6,15 @@ import { sendNotification } from "./fcmController.js";
 
 export const CreateProduct = async (req, res) => {
   try {
-    const { productName, addedby, groupId } = req.body;
+    const {
+      productName,
+      addedby,
+      groupId,
+      expirydate,
+      barCodeId,
+      quantity,
+      price,
+    } = req.body;
     const GroupExists = await GroupModel.findOne({ _id: groupId });
     const AddedUserDetails = await GetUserById(addedby);
     if (!GroupExists) {
@@ -16,7 +24,10 @@ export const CreateProduct = async (req, res) => {
       productName,
       addedby,
       groupId,
-      expirydate: new Date(),
+      expirydate: expirydate,
+      barCodeId,
+      quantity,
+      price,
     });
     await newProduct.save();
 
@@ -57,7 +68,7 @@ export const CreateProduct = async (req, res) => {
     return res.status(201).json({
       message: "Product created and added to group",
       product: newProduct,
-      added: AddedUserDetails.username,
+      addeduserName: AddedUserDetails.username,
     });
   } catch (error) {
     console.log(error);

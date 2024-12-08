@@ -10,6 +10,9 @@ const ProductSchema = new mongoose.Schema({
     ref: "Users",
     required: true,
   },
+  barCodeId: {
+    type: String,
+  },
   quantity: {
     type: Number,
     required: true,

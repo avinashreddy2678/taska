@@ -29,7 +29,7 @@ export const SaveFcmToken = async (req, res) => {
     if (!userWithToken) {
       // Create a new record if none exists
       await FcmTokenModel.create({
-        userId: userDetails.id,
+        userId: userDetails._id,
         fcmToken,
         lastUpdated: new Date(),
       });
@@ -65,7 +65,7 @@ export const getUserFromToken = async (token) => {
 };
 
 export const sendNotification = async (title, body, fcmTokens) => {
-  console.log(title, body, fcmTokens);
+  // console.log(title, body, fcmTokens);
   const message = {
     notification: {
       title: title,
