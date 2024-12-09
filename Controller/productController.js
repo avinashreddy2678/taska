@@ -15,7 +15,6 @@ export const CreateProduct = async (req, res) => {
       quantity,
       price,
     } = req.body;
-    console.log(req.body);
     const GroupExists = await GroupModel.findOne({ _id: groupId });
     const AddedUserDetails = await GetUserById(addedby);
     if (!GroupExists) {

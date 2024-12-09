@@ -28,11 +28,12 @@ export const SaveFcmToken = async (req, res) => {
 
     if (!userWithToken) {
       // Create a new record if none exists
-      await FcmTokenModel.create({
+      const CreatedFcmToken = await FcmTokenModel.create({
         userId: userDetails._id,
         fcmToken,
         lastUpdated: new Date(),
       });
+      await CreatedFcmToken.save();
       return res.json({ message: "FCM token saved successfully" });
     } else {
       // Update existing record if the token has changed

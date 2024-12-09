@@ -19,6 +19,7 @@ export const Signup = async (req, res) => {
       username,
       email,
       password,
+      createdAt: new Date(),
     });
 
     const CreateGroup = await GroupModel.create({
@@ -27,7 +28,7 @@ export const Signup = async (req, res) => {
       createdby: newUser._id,
       createdAt: new Date(),
       shareable: false,
-      groupType: "personel",
+      groupType: "groceries",
     });
 
     await CreateGroup.save();
@@ -55,9 +56,9 @@ export const Signin = async (req, res) => {
         path: "Allusers.userId",
         select: "username _id",
       },
-      populate:{
-        path:"AllProducts",
-      }
+      populate: {
+        path: "AllProducts",
+      },
     });
     if (!userExists) {
       return res.status(404).json({ message: "User does not exist" });

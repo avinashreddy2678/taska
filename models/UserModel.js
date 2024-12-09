@@ -20,6 +20,17 @@ const UserSchema = new mongoose.Schema({
       ref: "Groups",
     },
   ],
+  alertBefore: {
+    type: Number,
+    default: 3,
+  },
+  deleteAfter: {
+    type: Number,
+    default: 7,
+  },
+  createdAt: {
+    type: Date,
+  },
 });
 
 export default mongoose.models.Users || mongoose.model("Users", UserSchema);
