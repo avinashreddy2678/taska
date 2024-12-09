@@ -6,9 +6,7 @@ dotenv.config();
 export const SaveFcmToken = async (req, res) => {
   try {
     const { fcmToken } = req.body;
-
     const token = req.headers.authorization?.split(" ")[1];
-
     if (!token) {
       return res
         .status(401)
@@ -23,8 +21,9 @@ export const SaveFcmToken = async (req, res) => {
 
     // Find existing FCM token for the user
     const userWithToken = await FcmTokenModel.findOne({
-      userId: userDetails._id,
+      userId: userDetails.id,
     });
+    // console.log(userWithToken)
 
     if (!userWithToken) {
       // Create a new record if none exists
