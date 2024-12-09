@@ -71,7 +71,7 @@ export const Signin = async (req, res) => {
       return res.status(401).json({ message: "Password does not match" });
     }
 
-    let token = jwt.sign({ id: userExists._id }, process.env.JWT_SECREAT, {
+    let token = jwt.sign({ _id: userExists._id }, process.env.JWT_SECREAT, {
       expiresIn: "1d",
     });
 

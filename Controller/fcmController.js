@@ -21,9 +21,9 @@ export const SaveFcmToken = async (req, res) => {
 
     // Find existing FCM token for the user
     const userWithToken = await FcmTokenModel.findOne({
-      userId: userDetails.id,
+      userId: userDetails._id,
     });
-    // console.log(userWithToken)
+    // console.log(userWithToken);
 
     if (!userWithToken) {
       // Create a new record if none exists
@@ -33,6 +33,7 @@ export const SaveFcmToken = async (req, res) => {
         lastUpdated: new Date(),
       });
       await CreatedFcmToken.save();
+      // console.log(CreatedFcmToken);
       return res.json({ message: "FCM token saved successfully" });
     } else {
       // Update existing record if the token has changed
@@ -65,7 +66,6 @@ export const getUserFromToken = async (token) => {
 };
 
 export const sendNotification = async (title, body, fcmTokens) => {
-  // console.log(title, body, fcmTokens);
   const message = {
     notification: {
       title: title,

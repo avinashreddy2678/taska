@@ -24,7 +24,7 @@ export const CreateProduct = async (req, res) => {
       productName,
       addedby,
       groupId,
-      expirydate: expirydate,
+      expirydate: new Date(),
       barCodeId,
       quantity,
       price,
@@ -48,16 +48,15 @@ export const CreateProduct = async (req, res) => {
       "fcmToken -_id"
     );
     // it will check if any null valies and remove
-    const tokens = UserTokens.map((user) => user.fcmToken).filter(
+    const fcmTokens = UserTokens.map((user) => user.fcmToken).filter(
       (item) => item
     );
-
     if (UserTokens.length > 0) {
-      await sendNotification({
-        title: "New Product Added",
-        body: `${AddedUserDetails.username} added ${productName} to ${GroupExists.GroupName}`,
-        tokens: tokens,
-      });
+      await sendNotification(
+        "New Product Added",
+       `${AddedUserDetails.username} added ${productName} to ${GroupExists.GroupName}`,
+       fcmTokens
+    );
     }
 
     // we get userids here ,we have to get tokens from Fecm model
