@@ -53,8 +53,11 @@ export const Signin = async (req, res) => {
       path: "AllGroups",
       populate: {
         path: "Allusers.userId",
-        select: "username _id AllProducts",
+        select: "username _id",
       },
+      populate:{
+        path:"AllProducts",
+      }
     });
     if (!userExists) {
       return res.status(404).json({ message: "User does not exist" });
