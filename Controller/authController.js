@@ -54,7 +54,7 @@ export const Signin = async (req, res) => {
       path: "AllGroups",
       populate: {
         path: "Allusers.userId",
-        select: "username _id",
+        select: "username _id role",
       },
       populate: {
         path: "AllProducts",
