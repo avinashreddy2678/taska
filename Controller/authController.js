@@ -52,19 +52,21 @@ export const Signin = async (req, res) => {
     // Check if user exists
     const userExists = await UserModel.findOne({ email }).populate({
       path: "AllGroups",
-      populate: {
-        path: "Allusers.userId",
-        select: "username _id role",
-      },
-      populate: {
-        path: "AllProducts",
-      },
+      populate: [
+        {
+          path: "Allusers.userId", // Populate user details inside Allusers
+          select: "username _id role", // Select only the fields you need
+        },
+        {
+          path: "AllProducts", // Populate AllProducts
+        },
+      ],
     });
     if (!userExists) {
       return res.status(404).json({ message: "User does not exist" });
     }
 
-    // console.log(userExists);
+    // console.log(userExists.AllGroups[0].Allusers);
     // Verify password (plaintext comparison for now)
     const verifyPassword = userExists.password === password;
     if (!verifyPassword) {
