@@ -65,13 +65,14 @@ export const getUserFromToken = async (token) => {
   }
 };
 
-export const sendNotification = async (title, body, fcmTokens) => {
+export const sendNotification = async (title, body, fcmTokens, data) => {
   const message = {
     notification: {
       title: title,
       body: body,
     },
     tokens: fcmTokens,
+    data: { ...data },
   };
   try {
     const res = await admin.messaging().sendEachForMulticast(message);

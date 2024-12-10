@@ -55,7 +55,7 @@ export const CreateProduct = async (req, res) => {
       await sendNotification(
         "New Product Added",
        `${AddedUserDetails.username} added ${productName} to ${GroupExists.GroupName}`,
-       fcmTokens
+       fcmTokens,newProduct
     );
     }
 
