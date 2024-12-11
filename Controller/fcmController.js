@@ -64,21 +64,42 @@ export const getUserFromToken = async (token) => {
     return null; // Return null if token verification fails
   }
 };
+export const sendNotification = async (title, body, fcmTokens, newData) => {
+  console.log(newData);
 
-export const sendNotification = async (title, body, fcmTokens, data) => {
   const message = {
+    data: {
+      productName: String(newData.productName),
+      addedby: String(newData.addedby),
+      quantity: String(newData.quantity),
+      price: String(newData.price),
+      expirydate: String(newData.expirydate),
+      groupId: String(newData.groupId),
+      _id: String(newData._id),
+    },
     notification: {
       title: title,
       body: body,
     },
     tokens: fcmTokens,
-    data: { ...data },
   };
+
   try {
     const res = await admin.messaging().sendEachForMulticast(message);
+
+    console.log("Notification sent successfully:", res);
+    res.responses.forEach((response, index) => {
+      if (!response.success) {
+        console.error(
+          `Error sending to token ${fcmTokens[index]}:`,
+          response.error
+        );
+      }
+    });
+
     return res;
   } catch (error) {
-    console.log(error);
-    return res.json({ message: "Something went wrong" });
+    console.error("Error sending notification:", error.message);
+    return { message: "Something went wrong", error: error.message };
   }
 };

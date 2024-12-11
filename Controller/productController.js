@@ -24,7 +24,7 @@ export const CreateProduct = async (req, res) => {
       productName,
       addedby,
       groupId,
-      expirydate: new Date(),
+      expirydate,
       barCodeId,
       quantity,
       price,
@@ -51,12 +51,14 @@ export const CreateProduct = async (req, res) => {
     const fcmTokens = UserTokens.map((user) => user.fcmToken).filter(
       (item) => item
     );
+    // console.log(fcmTokens)
     if (UserTokens.length > 0) {
       await sendNotification(
         "New Product Added",
-       `${AddedUserDetails.username} added ${productName} to ${GroupExists.GroupName}`,
-       fcmTokens,newProduct
-    );
+        `${AddedUserDetails.username} added ${productName} to ${GroupExists.GroupName}`,
+        fcmTokens,
+        newProduct
+      );
     }
 
     // we get userids here ,we have to get tokens from Fecm model

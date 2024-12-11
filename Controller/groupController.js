@@ -106,3 +106,102 @@ export const getUserDetailsfromGroup = async (req, res) => {
     console.log(error);
   }
 };
+
+export const deleteGroupbyAdmin = async (req, res) => {
+  const { groupId, userId } = req.query;
+  try {
+    const Group = await GroupModel.findOne({ _id: groupId });
+    if (!Group) {
+      return res.status(400).json({ message: "Group not found" });
+    }
+    if (Group.createdby.toString() !== userId.toString()) {
+      return res.status(400).json({ message: "You are not admin" });
+    }
+
+    await Promise.all(
+      Group.Allusers.map(async (userId) => {
+        await UserModel.updateOne(
+          { _id: userId },
+          { $pull: { AllGroups: groupId } }
+        );
+      })
+    );
+
+    await Group.deleteOne({ _id: groupId });
+    return res.status(200).json({ message: "Group deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    return res.json({ message: "Something went wrong" });
+  }
+};
+export const leaveFromGroup = async (req, res) => {
+  const { groupId, userId } = req.query;
+
+  // Validate input
+  if (!groupId || !userId) {
+    return res.status(400).json({
+      success: false,
+      message: "Both groupId and userId are required",
+    });
+  }
+
+  try {
+    // Fetch group details
+    const group = await GroupModel.findById(groupId);
+
+    // Check if the group exists
+    if (!group) {
+      return res.status(404).json({
+        success: false,
+        message: "Group not found",
+      });
+    }
+
+    // Check if the user is the group admin
+    if (group.createdby.toString() === userId) {
+      return res.status(403).json({
+        success: false,
+        message: "Admin cannot leave the group",
+      });
+    }
+
+    // Check if the user is part of the group
+    // console.log(group.Allusers,userId)
+    const isMember = group.Allusers.some((user)=>(user.userId.toString()===userId));
+    // console.log(isMember)
+    if (!isMember) {
+      return res.status(404).json({
+        success: false,
+        message: "User is not a member of this group",
+      });
+    }
+
+    // Remove the user from the group members
+    group.Allusers = group.Allusers.filter((member) => member.userId.toString() !== userId);
+    await group.save();
+
+    // Remove the group ID from the user's AllGroups array
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    user.AllGroups = user.AllGroups.filter((id) => id.toString() !== groupId);
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "User has successfully left the group",
+    });
+
+  } catch (error) {
+    console.error("Error in leaveFromGroup:", error);
+    return res.status(500).json({
+      success: false,
+      message: "An unexpected error occurred. Please try again later",
+    });
+  }
+};
