@@ -167,7 +167,9 @@ export const leaveFromGroup = async (req, res) => {
 
     // Check if the user is part of the group
     // console.log(group.Allusers,userId)
-    const isMember = group.Allusers.some((user)=>(user.userId.toString()===userId));
+    const isMember = group.Allusers.some(
+      (user) => user.userId.toString() === userId
+    );
     // console.log(isMember)
     if (!isMember) {
       return res.status(404).json({
@@ -177,7 +179,9 @@ export const leaveFromGroup = async (req, res) => {
     }
 
     // Remove the user from the group members
-    group.Allusers = group.Allusers.filter((member) => member.userId.toString() !== userId);
+    group.Allusers = group.Allusers.filter(
+      (member) => member.userId.toString() !== userId
+    );
     await group.save();
 
     // Remove the group ID from the user's AllGroups array
@@ -196,7 +200,6 @@ export const leaveFromGroup = async (req, res) => {
       success: true,
       message: "User has successfully left the group",
     });
-
   } catch (error) {
     console.error("Error in leaveFromGroup:", error);
     return res.status(500).json({

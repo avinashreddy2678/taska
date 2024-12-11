@@ -64,19 +64,19 @@ export const getUserFromToken = async (token) => {
     return null; // Return null if token verification fails
   }
 };
-export const sendNotification = async (title, body, fcmTokens, newData) => {
-  console.log(newData);
+export const sendNotification = async (title, body, fcmTokens) => {
+  // console.log(newData);
 
   const message = {
-    data: {
-      productName: String(newData.productName),
-      addedby: String(newData.addedby),
-      quantity: String(newData.quantity),
-      price: String(newData.price),
-      expirydate: String(newData.expirydate),
-      groupId: String(newData.groupId),
-      _id: String(newData._id),
-    },
+    // data: {
+    //   productName: String(newData.productName),
+    //   addedby: String(newData.addedby),
+    //   quantity: String(newData.quantity),
+    //   price: String(newData.price),
+    //   expirydate: String(newData.expirydate),
+    //   groupId: String(newData.groupId),
+    //   _id: String(newData._id),
+    // },
     notification: {
       title: title,
       body: body,
