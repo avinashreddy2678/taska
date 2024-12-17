@@ -50,18 +50,19 @@ export const Signin = async (req, res) => {
   const { email, password } = req.body;
   try {
     // Check if user exists
-    const userExists = await UserModel.findOne({ email }).populate({
-      path: "AllGroups",
-      populate: [
-        {
-          path: "Allusers.userId", // Populate user details inside Allusers
-          select: "_id", // Select only the fields you need
-        },
-        {
-          path: "AllProducts", // Populate AllProducts
-        },
-      ],
-    });
+    const userExists = await UserModel.findOne({ email });
+    // .populate({
+    //   path: "AllGroups",
+    // populate: [
+    //   {
+    //     path: "Allusers.userId", // Populate user details inside Allusers
+    //     select: "_id", // Select only the fields you need
+    //   },
+    //   // {
+    //   //   path: "AllProducts", // Populate AllProducts
+    //   // },
+    // ],
+    // });
     if (!userExists) {
       return res.status(404).json({ message: "User does not exist" });
     }

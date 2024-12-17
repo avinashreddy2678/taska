@@ -103,3 +103,24 @@ export const changeProductStatus = async (req, res) => {
     return res.status(500).json({ message: "something went Wrong" });
   }
 };
+
+export const getAllGroupProducts = async (req, res) => {
+  const { groupId } = req.body;
+
+  try {
+    // Find the group and populate the AllProducts field
+    const group = await GroupModel.findOne({ _id: groupId }).populate(
+      "AllProducts"
+    );
+
+    if (!group) {
+      return res.status(404).json({ message: "No Group Found" });
+    }
+
+    // Send the populated group details along with its products
+    return res.status(200).json({ message: "success", group });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};

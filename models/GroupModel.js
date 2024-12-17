@@ -35,10 +35,10 @@ const GroupSchema = mongoose.Schema({
       ref: "Products",
     },
   ],
-  shareable: {
-    type: Boolean,
-    default: true,
-  },
+  // shareable: {
+  //   type: Boolean,
+  //   default: true,
+  // },
   // groupType: {
   //   type: String,
   // },
