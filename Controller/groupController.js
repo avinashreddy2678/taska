@@ -1,3 +1,4 @@
+import { populate } from "dotenv";
 import FcmTokenModel from "../models/FcmTokenModel.js";
 import GroupModel from "../models/GroupModel.js";
 import UserModel from "../models/UserModel.js";
@@ -14,7 +15,7 @@ export const CreateGroup = async (req, res) => {
       GroupName,
       createdby,
       creatorName: Creator.username,
-      groupType,
+      groupType: "groceries",
     });
 
     await newGroup.save();
@@ -177,6 +178,12 @@ export const leaveFromGroup = async (req, res) => {
         message: "User is not a member of this group",
       });
     }
+
+    const allTokens = await Promise.all(
+      group.Allusers.map((member) =>
+        FcmTokenModel.findOne({ _id: member.userId }).populate("fcmTokens")
+      )
+    );
 
     // Remove the user from the group members
     group.Allusers = group.Allusers.filter(

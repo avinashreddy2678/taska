@@ -31,6 +31,15 @@ const ProductSchema = new mongoose.Schema({
     type: mongoose.Types.ObjectId,
     ref: "Groups",
   },
+  createdAt: {
+    type: Date,
+    default: new Date(),
+  },
+  status: {
+    type: String,
+    enum: ["consumed", "Trashed", "toExpired"],
+    default: "toExpired",
+  },
 });
 
 export default mongoose.models.Products ||

@@ -31,6 +31,9 @@ const UserSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
   },
+  updatedAt: {
+    type: Date,
+  },
 });
 
 export default mongoose.models.Users || mongoose.model("Users", UserSchema);

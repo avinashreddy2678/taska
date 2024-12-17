@@ -42,6 +42,9 @@ const GroupSchema = mongoose.Schema({
   groupType: {
     type: String,
   },
+  updatedAt: {
+    type: Date,
+  },
 });
 
 export default mongoose.models.Groups || mongoose.model("Groups", GroupSchema);
