@@ -22,18 +22,18 @@ export const Signup = async (req, res) => {
       createdAt: new Date(),
     });
 
-    const CreateGroup = await GroupModel.create({
-      GroupName: "My-Personel Group",
-      Allusers: [{ userId: newUser._id, role: "admin" }],
-      createdby: newUser._id,
-      createdAt: new Date(),
-      shareable: false,
-      groupType: "groceries",
-    });
+    // const CreateGroup = await GroupModel.create({
+    //   GroupName: "My Group",
+    //   Allusers: [{ userId: newUser._id, role: "admin" }],
+    //   createdby: newUser._id,
+    //   createdAt: new Date(),
+    //   shareable: false,
+    //   // groupType: "groceries",
+    // });
 
-    await CreateGroup.save();
+    // await CreateGroup.save();
 
-    await newUser.AllGroups.push(CreateGroup._id);
+    // await newUser.AllGroups.push(CreateGroup._id);
     await newUser.save();
 
     return res
@@ -55,7 +55,7 @@ export const Signin = async (req, res) => {
       populate: [
         {
           path: "Allusers.userId", // Populate user details inside Allusers
-          select: "username _id role", // Select only the fields you need
+          // select: "username _id role", // Select only the fields you need
         },
         {
           path: "AllProducts", // Populate AllProducts

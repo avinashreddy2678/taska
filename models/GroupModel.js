@@ -39,9 +39,9 @@ const GroupSchema = mongoose.Schema({
     type: Boolean,
     default: true,
   },
-  groupType: {
-    type: String,
-  },
+  // groupType: {
+  //   type: String,
+  // },
   updatedAt: {
     type: Date,
   },
