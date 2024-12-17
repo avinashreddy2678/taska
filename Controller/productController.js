@@ -105,7 +105,7 @@ export const changeProductStatus = async (req, res) => {
 };
 
 export const getAllGroupProducts = async (req, res) => {
-  const { groupId } = req.body;
+  const { groupId } = req.query;
 
   try {
     // Find the group and populate the AllProducts field
