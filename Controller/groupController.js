@@ -1,4 +1,3 @@
-import { populate } from "dotenv";
 import FcmTokenModel from "../models/FcmTokenModel.js";
 import GroupModel from "../models/GroupModel.js";
 import UserModel from "../models/UserModel.js";
@@ -38,6 +37,24 @@ export const CreateGroup = async (req, res) => {
   }
 };
 
+// for online
+export const getUserOfGroup = async (req, res) => {
+  const { groupId } = req.query;
+  try {
+    const Group = await GroupModel.findOne({ _id: groupId }).populate({
+      path: "Allusers.userId",
+      select: "_id username email",
+    });
+    if (!Group) {
+      return res.json({ message: "No Group Found" });
+    }
+    // console.log(Group);
+    return res.json({ message: "Group Found", Users: Group.Allusers });
+  } catch (error) {
+    ree;
+  }
+};
+
 export const AddPeopletoGroup = async (req, res) => {
   try {
     const { groupId, userId } = req.body;
@@ -63,7 +80,6 @@ export const AddPeopletoGroup = async (req, res) => {
     await userExists.save();
 
     const userToken = await FcmTokenModel.findOne({ userId });
-    // console.log(userToken);
     if (userToken.fcmToken) {
       const fcmTokens = [userToken.fcmToken];
       await sendNotification(
