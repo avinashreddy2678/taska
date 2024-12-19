@@ -124,3 +124,21 @@ export const getAllGroupProducts = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+
+export const editProductdetails = async (req, res) => {
+  const { productId, ...updateFields } = req.body;
+  console.log(updateFields);
+  try {
+    const Product = await ProductModel.findByIdAndUpdate(
+      { _id: productId },
+      { $set: updateFields },
+      { new: true }
+    );
+    if (!Product) {
+      return res.json({ message: "Product not found" });
+    }
+    return res.status(200).json({ message: "product updated", Product });
+  } catch (error) {
+    return res.status(500).json({ message: "Somethig went Wrong" });
+  }
+};
