@@ -89,10 +89,19 @@ export const AddPeopletoGroup = async (req, res) => {
       );
     }
 
+    // given direct member option inly
+    const responseData = {
+      role: "member",
+      userId: {
+        username: userExists.username,
+        _id: userExists._id,
+        email: userExists.email,
+      },
+    };
+
     return res.status(201).json({
       message: "User added to the group successfully",
-      group: GroupExists,
-      username: userExists.username,
+      user: responseData,
     });
   } catch (error) {
     console.log(error);
