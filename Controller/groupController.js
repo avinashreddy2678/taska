@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import FcmTokenModel from "../models/FcmTokenModel.js";
 import GroupModel from "../models/GroupModel.js";
 import UserModel from "../models/UserModel.js";
@@ -94,7 +95,7 @@ export const AddPeopletoGroup = async (req, res) => {
       role: "member",
       userId: {
         username: userExists.username,
-        _id: userExists._id, 
+        _id: userExists._id,
         email: userExists.email,
       },
     };
@@ -102,7 +103,7 @@ export const AddPeopletoGroup = async (req, res) => {
     return res.status(201).json({
       message: "User added to the group successfully",
       user: responseData,
-      group:GroupExists
+      group: GroupExists,
     });
   } catch (error) {
     console.log(error);
@@ -144,13 +145,25 @@ export const deleteGroupbyAdmin = async (req, res) => {
       return res.status(400).json({ message: "You are not admin" });
     }
 
-    await Promise.all(
-      Group.Allusers.map(async (userId) => {
-        await UserModel.updateOne(
-          { _id: userId },
-          { $pull: { AllGroups: groupId } }
-        );
-      })
+    // await Promise.all(
+    //   Group.Allusers.map(async (eachuserId) => {
+    //     try {
+    //       // const result = await UserModel.updateOne(
+    //       //   { _id: eachuserId },
+    //       //   { $pull: { AllGroups: groupId } }
+    //       // );
+    //       // console.log(`Updated user ${eachuserId}:`, result);
+    //       await UserModel.updateMany({})
+    //     } catch (error) {
+    //       console.error(`Error updating user ${eachuserId}:`, error);
+    //     }
+    //   })
+    // );
+    const userIds = Group.Allusers.map((id) => id.userId.toString());
+
+    await UserModel.updateMany(
+      { _id: { $in: userIds } }, // Check if userIds is an array
+      { $pull: { AllGroups: groupId } }
     );
 
     await Group.deleteOne({ _id: groupId });
