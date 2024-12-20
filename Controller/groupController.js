@@ -145,20 +145,6 @@ export const deleteGroupbyAdmin = async (req, res) => {
       return res.status(400).json({ message: "You are not admin" });
     }
 
-    // await Promise.all(
-    //   Group.Allusers.map(async (eachuserId) => {
-    //     try {
-    //       // const result = await UserModel.updateOne(
-    //       //   { _id: eachuserId },
-    //       //   { $pull: { AllGroups: groupId } }
-    //       // );
-    //       // console.log(`Updated user ${eachuserId}:`, result);
-    //       await UserModel.updateMany({})
-    //     } catch (error) {
-    //       console.error(`Error updating user ${eachuserId}:`, error);
-    //     }
-    //   })
-    // );
     const userIds = Group.Allusers.map((id) => id.userId.toString());
 
     await UserModel.updateMany(

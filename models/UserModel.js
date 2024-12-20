@@ -20,18 +20,21 @@ const UserSchema = new mongoose.Schema({
       ref: "Groups",
     },
   ],
-  alertBefore: {
-    type: Number,
-    default: 3,
-  },
-  deleteAfter: {
-    type: Number,
-    default: 7,
-  },
   createdAt: {
     type: Date,
   },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
   updatedAt: {
+    type: Date,
+  },
+  isSubscribed: {
+    type: Boolean,
+    default: false,
+  },
+  SubscribeUpto: {
     type: Date,
   },
 });
