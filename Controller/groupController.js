@@ -94,7 +94,7 @@ export const AddPeopletoGroup = async (req, res) => {
       role: "member",
       userId: {
         username: userExists.username,
-        _id: userExists._id,
+        _id: userExists._id, 
         email: userExists.email,
       },
     };
@@ -102,6 +102,7 @@ export const AddPeopletoGroup = async (req, res) => {
     return res.status(201).json({
       message: "User added to the group successfully",
       user: responseData,
+      group:GroupExists
     });
   } catch (error) {
     console.log(error);
