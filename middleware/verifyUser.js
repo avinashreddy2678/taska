@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import UserModel from "../models/UserModel.js";
 
 export const VerifyUser = async (req, res, next) => {
   try {
@@ -19,7 +20,11 @@ export const VerifyUser = async (req, res, next) => {
 
     // Attach decoded user information to the request object
     req.user = decoded;
-    console.log(req);
+
+    const user =await UserModel.findOne({ _id: req.user._id });
+    if (!user.isVerified) {
+      return res.json({ message: "User not vieriefed" });
+    }
 
     // Proceed to next middleware or route handler
     next();

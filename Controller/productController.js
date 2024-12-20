@@ -56,8 +56,7 @@ export const CreateProduct = async (req, res) => {
       await sendNotification(
         "New Product Added",
         `${AddedUserDetails.username} added ${productName} to ${GroupExists.GroupName}`,
-        fcmTokens,
-        newProduct
+        fcmTokens
       );
     }
 
@@ -127,7 +126,6 @@ export const getAllGroupProducts = async (req, res) => {
 
 export const editProductdetails = async (req, res) => {
   const { productId, ...updateFields } = req.body;
-  console.log(updateFields);
   try {
     const Product = await ProductModel.findByIdAndUpdate(
       { _id: productId },
@@ -136,6 +134,28 @@ export const editProductdetails = async (req, res) => {
     );
     if (!Product) {
       return res.json({ message: "Product not found" });
+    }
+
+    const AllGroupUsersIds =
+      GroupExists?.Allusers?.map((user) => user.userId) || [];
+
+    // Filter out the addedby user
+    const filteredUserIds = AllGroupUsersIds.filter(
+      (userid) => userid.toString() !== addedby.toString()
+    );
+
+    const UserTokens = await FcmTokenModel.find(
+      {
+        userId: { $in: filteredUserIds },
+      },
+      "fcmToken -_id"
+    );
+    if (UserTokens.length > 0) {
+      await sendNotification(
+        "Product Edited",
+        `$ ${Product.productName} Edited`,
+        fcmTokens
+      );
     }
     return res.status(200).json({ message: "product updated", Product });
   } catch (error) {

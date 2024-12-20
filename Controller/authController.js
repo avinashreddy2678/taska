@@ -24,6 +24,7 @@ export const Signup = async (req, res) => {
       email,
       password: hashedPassword,
       createdAt: new Date(),
+      updatedAt: new Date(),
     });
 
     // const CreateGroup = await GroupModel.create({
@@ -44,7 +45,7 @@ export const Signup = async (req, res) => {
 
     return res
       .status(201)
-      .json({ message: "User created successfully", user: newUser });
+      .json({ message: "Verification Otp is sent ", user: newUser });
   } catch (error) {
     console.error("Error in Signup:", error);
     return res.status(500).json({ message: "Something went wrong" });
@@ -63,7 +64,7 @@ export const verifyOtp = async (req, res) => {
     if (hasExpired) {
       await generateOtp(userExists.email);
     }
-    console.log(otp, userExists.otp);
+    // console.log(otp, userExists.otp);
     const verify = (await userExists.otp) === otp;
     if (!verify) {
       return res.json({ message: "Otp is Wrong" });
@@ -74,6 +75,8 @@ export const verifyOtp = async (req, res) => {
       { isVerified: true },
       { new: true }
     );
+
+    await userExists.deleteMany({ email });
 
     let token = jwt.sign(
       { _id: existingUser._id, email: email },

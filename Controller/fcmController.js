@@ -87,7 +87,7 @@ export const sendNotification = async (title, body, fcmTokens) => {
   try {
     const res = await admin.messaging().sendEachForMulticast(message);
 
-    console.log("Notification sent successfully:", res);
+    // console.log("Notification sent successfully:", res);
     res.responses.forEach((response, index) => {
       if (!response.success) {
         console.error(

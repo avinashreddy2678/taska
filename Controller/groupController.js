@@ -7,7 +7,10 @@ import { sendNotification } from "./fcmController.js";
 export const CreateGroup = async (req, res) => {
   try {
     const { GroupName, createdby } = req.body;
-    const Creator = await UserModel.findOne({ _id: createdby });
+    const Creator = await UserModel.findOne(
+      { _id: createdby },
+      { updatedAt: new Date() }
+    );
     if (!Creator) {
       return res.status(500).json({ message: "Something went wrong" });
     }
@@ -20,7 +23,6 @@ export const CreateGroup = async (req, res) => {
 
     await newGroup.save();
     // save the group in users
-    const username = Creator.username;
     // add this creator to that group as memebr and then add group to user list
     await newGroup.Allusers.push({
       userId: createdby,
@@ -63,7 +65,10 @@ export const AddPeopletoGroup = async (req, res) => {
     if (!GroupExists) {
       return res.status(400).json({ message: "Group not exists" });
     }
-    const userExists = await UserModel.findOne({ _id: userId });
+    const userExists = await UserModel.findOne(
+      { _id: userId },
+      { updatedAt: new Date() }
+    );
     // const creatorExists = await UserModel.findOne({ _id: createdby });
     if (!userExists) {
       return res.status(400).json({ message: "user or creator not exists" });
@@ -147,8 +152,15 @@ export const deleteGroupbyAdmin = async (req, res) => {
 
     const userIds = Group.Allusers.map((id) => id.userId.toString());
 
+    const fcms = await FcmTokenModel.find({ userId: { $in: userIds } });
+    const fcmTokens = fcms.map((item) => item.fcmToken);
+    await sendNotification(
+      "New Group",
+      ` ${Group.GroupName} is deleted ${Group.creatorName}`,
+      fcmTokens
+    );
     await UserModel.updateMany(
-      { _id: { $in: userIds } }, // Check if userIds is an array
+      { _id: { $in: userIds }, updatedAt: new Date() }, // Check if userIds is an array
       { $pull: { AllGroups: groupId } }
     );
 
@@ -203,13 +215,15 @@ export const leaveFromGroup = async (req, res) => {
       });
     }
 
-    const allTokens = await Promise.all(
-      group.Allusers.map((member) =>
-        FcmTokenModel.findOne({ _id: member.userId }).populate("fcmTokens")
-      )
+    const userIds = group.Allusers.filter((user) => user.userId !== userId).map(
+      (user) => user.userId
     );
+    const fcms = await FcmTokenModel.find({
+      userId: { $in: userIds },
+    });
 
-    // Remove the user from the group members
+    const fcmTokens = fcms.map((item) => item.fcmToken);
+
     group.Allusers = group.Allusers.filter(
       (member) => member.userId.toString() !== userId
     );
@@ -223,7 +237,11 @@ export const leaveFromGroup = async (req, res) => {
         message: "User not found",
       });
     }
-
+    await sendNotification(
+      "New Group",
+      `${user.username} left the ${group.GroupName} Group `,
+      fcmTokens
+    );
     user.AllGroups = user.AllGroups.filter((id) => id.toString() !== groupId);
     await user.save();
 
