@@ -150,7 +150,7 @@ export const Signin = async (req, res) => {
         await generateOtp(userExists.email); // Generate OTP for verification
         return res
           .status(403)
-          .json({ message: "User not verified. OTP sent.", success: true });
+          .json({ message: "User not verified. OTP sent.", success: false });
       }
       let token = jwt.sign(
         { _id: userExists._id, email: email },

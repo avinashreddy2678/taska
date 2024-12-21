@@ -10,9 +10,9 @@ export const CreateGroup = async (req, res) => {
     const Creator = await UserModel.findOneAndUpdate(
       { _id: createdby },
       { updatedAt: new Date() },
-      { new: true } 
+      { new: true }
     );
-    
+
     if (!Creator) {
       return res.status(500).json({ message: "Something went wrong" });
     }
@@ -69,7 +69,8 @@ export const AddPeopletoGroup = async (req, res) => {
     }
     const userExists = await UserModel.findOne(
       { _id: userId },
-      { updatedAt: new Date() }
+      { updatedAt: new Date() },
+      { new: true }
     );
     // const creatorExists = await UserModel.findOne({ _id: createdby });
     if (!userExists) {
@@ -83,7 +84,7 @@ export const AddPeopletoGroup = async (req, res) => {
     }
     await GroupExists.Allusers.push({ userId, role: "member" });
     await GroupExists.save();
-
+    console.log(userExists);
     await userExists.AllGroups.push(groupId);
     await userExists.save();
 
