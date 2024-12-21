@@ -7,10 +7,12 @@ import { sendNotification } from "./fcmController.js";
 export const CreateGroup = async (req, res) => {
   try {
     const { GroupName, createdby } = req.body;
-    const Creator = await UserModel.findOne(
+    const Creator = await UserModel.findOneAndUpdate(
       { _id: createdby },
-      { updatedAt: new Date() }
+      { updatedAt: new Date() },
+      { new: true } 
     );
+    
     if (!Creator) {
       return res.status(500).json({ message: "Something went wrong" });
     }
