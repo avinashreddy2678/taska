@@ -127,7 +127,9 @@ export const Signin = async (req, res) => {
     // ],
     // });
     if (!userExists) {
-      return res.status(404).json({ message: "User does not exist" });
+      return res
+        .status(404)
+        .json({ message: "User does not exist", success: false });
     }
 
     // console.log(userExists.AllGroups[0].Allusers);
@@ -137,7 +139,7 @@ export const Signin = async (req, res) => {
         return res.json({ message: "something went Wrong" });
       }
       if (!result) {
-        return res.json({ message: "Password wrong" });
+        return res.json({ message: "Password wrong", success: false });
       }
       if (!userExists.isVerified) {
         await generateOtp(userExists.email);
@@ -166,7 +168,9 @@ export const Signin = async (req, res) => {
     // removing password
   } catch (error) {
     console.error("Error in Signin:", error);
-    return res.status(500).json({ message: "Something went wrong" });
+    return res
+      .status(500)
+      .json({ message: "Something went wrong", success: false });
   }
 };
 
