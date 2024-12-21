@@ -13,7 +13,9 @@ export const Signup = async (req, res) => {
     // Check if user already exists
     const userExists = await UserModel.findOne({ email });
     if (userExists) {
-      return res.status(400).json({ message: "User Already Exists" });
+      return res
+        .status(400)
+        .json({ message: "User Already Exists", success: false });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -43,12 +45,16 @@ export const Signup = async (req, res) => {
     // it will generate and send otp to taht email
     await generateOtp(newUser.email);
 
-    return res
-      .status(201)
-      .json({ message: "Verification Otp is sent ", user: newUser });
+    return res.status(201).json({
+      message: "Verification Otp is sent ",
+      user: newUser,
+      success: true,
+    });
   } catch (error) {
     console.error("Error in Signup:", error);
-    return res.status(500).json({ message: "Something went wrong" });
+    return res
+      .status(500)
+      .json({ message: "Something went wrong", success: false });
   }
 };
 
@@ -67,7 +73,7 @@ export const verifyOtp = async (req, res) => {
     // console.log(otp, userExists.otp);
     const verify = (await userExists.otp) === otp;
     if (!verify) {
-      return res.json({ message: "Otp is Wrong" });
+      return res.json({ message: "Otp is Wrong", success: false });
     }
 
     const existingUser = await UserModel.findOneAndUpdate(
@@ -80,7 +86,6 @@ export const verifyOtp = async (req, res) => {
 
     if (userExists) {
       const res = await VerificationModel.deleteMany({ email });
-      console.log(res);
     }
 
     let token = jwt.sign(
@@ -143,7 +148,7 @@ export const Signin = async (req, res) => {
       }
       if (!userExists.isVerified) {
         await generateOtp(userExists.email);
-        return res.json({ message: "User not verified", success: false });
+        return res.json({ message: "User not verified", success: true });
       }
       let token = jwt.sign(
         { _id: userExists._id, email: email },
