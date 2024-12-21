@@ -76,7 +76,12 @@ export const verifyOtp = async (req, res) => {
       { new: true }
     );
 
-    await userExists.deleteMany({ email });
+    console.log(userExists);
+
+    if (userExists) {
+      const res = await VerificationModel.deleteMany({ email });
+      console.log(res);
+    }
 
     let token = jwt.sign(
       { _id: existingUser._id, email: email },
