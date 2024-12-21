@@ -67,7 +67,7 @@ export const AddPeopletoGroup = async (req, res) => {
     if (!GroupExists) {
       return res.status(400).json({ message: "Group not exists" });
     }
-    const userExists = await UserModel.findOne(
+    const userExists = await UserModel.findOneAndUpdate(
       { _id: userId },
       { updatedAt: new Date() },
       { new: true }
@@ -88,7 +88,7 @@ export const AddPeopletoGroup = async (req, res) => {
     await userExists.AllGroups.push(groupId);
     await userExists.save();
 
-    const userToken = await FcmTokenModel.findOne({ userId });
+    const userToken = await FcmTokenModel.find({ userId });
     if (userToken.fcmToken) {
       const fcmTokens = [userToken.fcmToken];
       await sendNotification(
