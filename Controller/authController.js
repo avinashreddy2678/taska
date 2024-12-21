@@ -147,8 +147,10 @@ export const Signin = async (req, res) => {
         return res.json({ message: "Password wrong", success: false });
       }
       if (!userExists.isVerified) {
-        await generateOtp(userExists.email);
-        return res.json({ message: "User not verified", success: true });
+        await generateOtp(userExists.email); // Generate OTP for verification
+        return res
+          .status(403)
+          .json({ message: "User not verified. OTP sent.", success: true });
       }
       let token = jwt.sign(
         { _id: userExists._id, email: email },
@@ -176,6 +178,25 @@ export const Signin = async (req, res) => {
     return res
       .status(500)
       .json({ message: "Something went wrong", success: false });
+  }
+};
+
+export const ResendOtp = async (req, res) => {
+  const { email } = req.query;
+  try {
+    const getOtp = await VerificationModel.findOne({ email });
+    if (!getOtp || getOtp.expiresIn < new Date()) {
+      await generateOtp(email);
+    } else {
+      console.log(email, getOtp);
+      await sendMail(email, getOtp.otp);
+    }
+
+    return res.json({ message: "Otp sent to Mail", success: true });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Something went Wrong", success: false });
   }
 };
 
