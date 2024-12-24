@@ -29,6 +29,7 @@ const UserSchema = new mongoose.Schema({
   },
   updatedAt: {
     type: Date,
+    default: new Date(),
   },
   isSubscribed: {
     type: Boolean,

@@ -73,7 +73,7 @@ export const verifyOtp = async (req, res) => {
     // console.log(otp, userExists.otp);
     const verify = (await userExists.otp) === otp;
     if (!verify) {
-      return res.json({ message: "Otp is Wrong", success: false });
+      return res.json({ message: "Otp is Invalid", success: false });
     }
 
     const existingUser = await UserModel.findOneAndUpdate(
@@ -119,6 +119,7 @@ export const Signin = async (req, res) => {
   try {
     // Check if user exists
     const userExists = await UserModel.findOne({ email });
+
     // .populate({
     //   path: "AllGroups",
     // populate: [
@@ -197,6 +198,29 @@ export const ResendOtp = async (req, res) => {
     return res
       .status(500)
       .json({ message: "Something went Wrong", success: false });
+  }
+};
+
+export const userUpdates = async (req, res) => {
+  const { userId, updatedAt } = req.query;
+  try {
+    const User = await UserModel.findOne(
+      { _id: userId },
+      "updatedAt AllGroups"
+    );
+    if (!User) {
+      return res
+        .status(400)
+        .json({ message: "User not Found", success: false });
+    }
+    if (User.updatedAt === updatedAt) {
+      return res.json({ message: "Data is Synced", success: true });
+    }
+
+    return res.status(200).json({ message: "User details found", User });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Something went wrong" });
   }
 };
 

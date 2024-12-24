@@ -126,6 +126,7 @@ export const getAllGroupProducts = async (req, res) => {
 
 export const editProductdetails = async (req, res) => {
   const { productId, ...updateFields } = req.body;
+  console.log(productId)
   try {
     const Product = await ProductModel.findByIdAndUpdate(
       { _id: productId },
@@ -135,30 +136,34 @@ export const editProductdetails = async (req, res) => {
     if (!Product) {
       return res.json({ message: "Product not found" });
     }
-
-    const AllGroupUsersIds =
-      GroupExists?.Allusers?.map((user) => user.userId) || [];
-
-    // Filter out the addedby user
-    const filteredUserIds = AllGroupUsersIds.filter(
-      (userid) => userid.toString() !== addedby.toString()
-    );
-
-    const UserTokens = await FcmTokenModel.find(
-      {
-        userId: { $in: filteredUserIds },
-      },
-      "fcmToken -_id"
-    );
-    if (UserTokens.length > 0) {
-      await sendNotification(
-        "Product Edited",
-        `$ ${Product.productName} Edited`,
-        fcmTokens
-      );
-    }
+   
+  
     return res.status(200).json({ message: "product updated", Product });
   } catch (error) {
     return res.status(500).json({ message: "Somethig went Wrong" });
+  }
+};
+
+export const deleteProduct = async (req, res) => {
+  const { productId, groupId } = req.query;
+  try {
+    const Group = await GroupModel.findOne({ _id: groupId });
+    if (!Group) {
+      return res.json({ message: "Group not Found" });
+    }
+    const Product = await ProductModel.findOne({ _id: productId });
+    if (!Product) {
+      return res.json({ message: "Proudct not Found" });
+    }
+    await ProductModel.deleteOne({ _id: productId });
+    // await ProductModel.save();
+    Group.AllProducts = await Group.AllProducts.filter(
+      (item) => item !== productId
+    );
+    await Group.save();
+    return res.json({ message: "Product removed" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "somethign went wrong" });
   }
 };

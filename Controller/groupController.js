@@ -84,7 +84,6 @@ export const AddPeopletoGroup = async (req, res) => {
     }
     await GroupExists.Allusers.push({ userId, role: "member" });
     await GroupExists.save();
-    console.log(userExists);
     await userExists.AllGroups.push(groupId);
     await userExists.save();
 
