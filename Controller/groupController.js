@@ -56,7 +56,7 @@ export const getUserOfGroup = async (req, res) => {
     // console.log(Group);
     return res.json({ message: "Group Found", Users: Group.Allusers });
   } catch (error) {
-    ree;
+    return res.status(500).json({ message: "Something went wrond" });
   }
 };
 
