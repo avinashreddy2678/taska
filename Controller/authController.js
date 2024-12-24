@@ -203,6 +203,8 @@ export const ResendOtp = async (req, res) => {
 
 export const userUpdates = async (req, res) => {
   const { userId, updatedAt } = req.query;
+  const updatedAtQuery = new Date(updatedAt);
+
   try {
     const User = await UserModel.findOne(
       { _id: userId },
@@ -213,7 +215,7 @@ export const userUpdates = async (req, res) => {
         .status(400)
         .json({ message: "User not Found", success: false });
     }
-    if (User.updatedAt === updatedAt) {
+    if (User.updatedAt.getTime() == updatedAtQuery.getTime()) {
       return res.json({ message: "Data is Synced", success: true });
     }
 

@@ -169,7 +169,8 @@ export const deleteGroupbyAdmin = async (req, res) => {
     );
     await UserModel.updateMany(
       { _id: { $in: userIds }, updatedAt: new Date() }, // Check if userIds is an array
-      { $pull: { AllGroups: groupId } }
+      { $pull: { AllGroups: groupId } },
+      { new: true }
     );
 
     await Group.deleteOne({ _id: groupId });
