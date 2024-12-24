@@ -93,12 +93,13 @@ export const AddPeopletoGroup = async (req, res) => {
       { new: true }
     );
 
-    const userToken = await FcmTokenModel.find({ userId });
+    const userToken = await FcmTokenModel.findOne({ userId });
+    console.log(userToken);
     if (userToken.fcmToken) {
       const fcmTokens = [userToken.fcmToken];
       await sendNotification(
         "New Group",
-        `You are added in ${GroupExists.GroupName}`,
+        `You are added in ${GroupExists.GroupName} group`,
         fcmTokens
       );
     }
@@ -163,14 +164,18 @@ export const deleteGroupbyAdmin = async (req, res) => {
     const fcms = await FcmTokenModel.find({ userId: { $in: userIds } });
     const fcmTokens = fcms.map((item) => item.fcmToken);
     await sendNotification(
-      "New Group",
-      ` ${Group.GroupName} is deleted ${Group.creatorName}`,
+      "Group Alert",
+      ` ${Group.GroupName} is deleted by ${Group.creatorName}`,
       fcmTokens
     );
     await UserModel.updateMany(
-      { _id: { $in: userIds }, updatedAt: new Date() }, // Check if userIds is an array
-      { $pull: { AllGroups: groupId } },
-      { new: true }
+      { _id: { $in: userIds } },
+      { $pull: { AllGroups: groupId } }
+    );
+
+    await UserModel.updateMany(
+      { _id: { $in: userIds } },
+      { $set: { updatedAt: new Date() } }
     );
 
     await Group.deleteOne({ _id: groupId });
@@ -233,9 +238,12 @@ export const leaveFromGroup = async (req, res) => {
 
     const fcmTokens = fcms.map((item) => item.fcmToken);
 
-    group.Allusers = group.Allusers.filter(
-      (member) => member.userId.toString() !== userId
+    await GroupModel.findByIdAndUpdate(
+      groupId,
+      { $pull: { Allusers: { userId: userId } } },
+      { new: true }
     );
+
     await group.save();
 
     // Remove the group ID from the user's AllGroups array

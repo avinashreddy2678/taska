@@ -64,25 +64,19 @@ export const getUserFromToken = async (token) => {
     return null; // Return null if token verification fails
   }
 };
-export const sendNotification = async (title, body, fcmTokens) => {
+export const sendNotification = async (title, body, fcmTokens, data = null) => {
   // console.log(newData);
 
   const message = {
-    // data: {
-    //   productName: String(newData.productName),
-    //   addedby: String(newData.addedby),
-    //   quantity: String(newData.quantity),
-    //   price: String(newData.price),
-    //   expirydate: String(newData.expirydate),
-    //   groupId: String(newData.groupId),
-    //   _id: String(newData._id),
-    // },
     notification: {
       title: title,
       body: body,
     },
     tokens: fcmTokens,
   };
+  if (data) {
+    message.data = data;
+  }
 
   try {
     const res = await admin.messaging().sendEachForMulticast(message);
