@@ -84,8 +84,14 @@ export const AddPeopletoGroup = async (req, res) => {
     }
     await GroupExists.Allusers.push({ userId, role: "member" });
     await GroupExists.save();
-    await userExists.AllGroups.push(groupId);
-    await userExists.save();
+    await UserModel.findOneAndUpdate(
+      { _id: userId },
+      {
+        $push: { AllGroups: groupId },
+        $set: { updatedAt: new Date() },
+      },
+      { new: true }
+    );
 
     const userToken = await FcmTokenModel.find({ userId });
     if (userToken.fcmToken) {
