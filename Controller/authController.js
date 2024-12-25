@@ -163,9 +163,9 @@ export const Signin = async (req, res) => {
       );
 
       await FcmTokenModel.findOneAndUpdate(
-        { userId:userExists._id },
-        { $set: { fcmToken, isLoggedIn: true } },
-        { upsert: true, new: true }
+        { userId: userExists._id },
+        { $set: { isLoggedin: true } },
+        { new: true }
       );
       const userWithoutPassword = {
         ...userExists.toObject(),
