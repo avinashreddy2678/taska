@@ -49,7 +49,6 @@ export const CreateProduct = async (req, res) => {
       },
       "fcmToken -_id" // Select only the fcmToken field and exclude _id
     );
-    
 
     // it will check if any null valies and remove
     const fcmTokens = UserTokens.map((user) => user.fcmToken).filter(
@@ -58,8 +57,8 @@ export const CreateProduct = async (req, res) => {
 
     if (fcmTokens.length > 0) {
       await sendNotification(
-        "New Product Added",
-        `${AddedUserDetails.username} added ${productName} to ${GroupExists.GroupName}`,
+        "New Item Added!",
+        `${AddedUserDetails.username} added ${productName} to ${GroupExists.GroupName}. Tap to check it out!`,
         fcmTokens
       );
     }

@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import VerificationModel from "../models/VerificationModel.js";
 import { sendMail } from "../utils/sendMail.js";
+import FcmTokenModel from "../models/FcmTokenModel.js";
 dotenv.config();
 // Signup Controller
 export const Signup = async (req, res) => {
@@ -82,7 +83,7 @@ export const verifyOtp = async (req, res) => {
       { new: true }
     );
 
-    console.log(userExists);
+    // console.log(userExists);
 
     if (userExists) {
       const res = await VerificationModel.deleteMany({ email });
@@ -159,6 +160,12 @@ export const Signin = async (req, res) => {
         {
           expiresIn: "30d",
         }
+      );
+
+      await FcmTokenModel.findOneAndUpdate(
+        { userId },
+        { $set: { fcmToken, isLoggedIn: true } },
+        { upsert: true, new: true }
       );
       const userWithoutPassword = {
         ...userExists.toObject(),
@@ -257,18 +264,30 @@ const generateOtp = async (email) => {
   }
 };
 
-export const handleLogout = async () => {
+export const handleLogout = async (req, res) => {
   const { userId } = req.query;
+  if (!userId) {
+    return res.status(400).json({ message: "User ID is required" });
+  }
+
   try {
-    // Mark token as inactive instead of deleting (in case you want to keep historical records)
-    await FcmTokenModel.updateOne({ userId }, { $set: { isLoggedIn: false } });
+    const result = await FcmTokenModel.updateOne(
+      { userId },
+      { $set: { isLoggedin: false } }
+    );
 
-    // Alternatively, you can delete the token if you don't need to keep it
-    // await FcmTokenModel.deleteOne({ userId });
-
-    res.status(200).send("User logged out and token cleared");
+    if (result.modifiedCount > 0) {
+      return res
+        .status(200)
+        .json({ message: "User logged out and token cleared", success: true });
+    } else {
+      return res.status(404).json({
+        message: "User not found or already logged out",
+        success: false,
+      });
+    }
   } catch (error) {
     console.error("Error during logout:", error);
-    res.status(500).send("Server error");
+    return res.status(500).json({ message: "Server error", success: false });
   }
 };

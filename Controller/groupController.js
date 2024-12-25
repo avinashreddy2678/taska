@@ -95,12 +95,11 @@ export const AddPeopletoGroup = async (req, res) => {
     );
 
     const userToken = await FcmTokenModel.findOne({ userId });
-    console.log(userToken);
     if (userToken.fcmToken && userToken.isLoggedin) {
       const fcmTokens = [userToken.fcmToken];
       await sendNotification(
-        "New Group",
-        `You are added in ${GroupExists.GroupName} group`,
+        "You're Invited to a Shelf!",
+        ` 🎉 ${GroupExists.creatorName} added you to ${GroupExists.GroupName}! Tap to explore and start organizing together!`,
         fcmTokens
       );
     }
@@ -162,7 +161,10 @@ export const deleteGroupbyAdmin = async (req, res) => {
 
     const userIds = Group.Allusers.map((id) => id.userId.toString());
 
-    const fcms = await FcmTokenModel.find({ userId: { $in: userIds },isLoggedin:true });
+    const fcms = await FcmTokenModel.find({
+      userId: { $in: userIds },
+      isLoggedin: true,
+    });
     const fcmTokens = fcms.map((item) => item.fcmToken);
     await sendNotification(
       "Group Alert",
@@ -238,7 +240,8 @@ export const leaveFromGroup = async (req, res) => {
       (user) => user.userId
     );
     const fcms = await FcmTokenModel.find({
-      userId: { $in: userIds },isLoggedin:true
+      userId: { $in: userIds },
+      isLoggedin: true,
     });
 
     const fcmTokens = fcms.map((item) => item.fcmToken);
