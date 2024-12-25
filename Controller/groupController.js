@@ -173,10 +173,11 @@ export const deleteGroupbyAdmin = async (req, res) => {
       { $pull: { AllGroups: groupId } }
     );
 
-    await UserModel.updateMany(
+    const result = await UserModel.updateMany(
       { _id: { $in: userIds } },
       { $set: { updatedAt: new Date() } }
     );
+    console.log(result);
 
     await Group.deleteOne({ _id: groupId });
     return res.status(200).json({ message: "Group deleted successfully" });

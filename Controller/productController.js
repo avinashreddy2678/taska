@@ -47,12 +47,13 @@ export const CreateProduct = async (req, res) => {
       },
       "fcmToken -_id"
     );
+
     // it will check if any null valies and remove
     const fcmTokens = UserTokens.map((user) => user.fcmToken).filter(
       (item) => item
     );
-    // console.log(fcmTokens)
-    if (UserTokens.length > 0) {
+
+    if (fcmTokens.length > 0) {
       await sendNotification(
         "New Product Added",
         `${AddedUserDetails.username} added ${productName} to ${GroupExists.GroupName}`,
@@ -126,7 +127,7 @@ export const getAllGroupProducts = async (req, res) => {
 
 export const editProductdetails = async (req, res) => {
   const { productId, ...updateFields } = req.body;
-  console.log(productId)
+  console.log(productId);
   try {
     const Product = await ProductModel.findByIdAndUpdate(
       { _id: productId },
@@ -136,8 +137,7 @@ export const editProductdetails = async (req, res) => {
     if (!Product) {
       return res.json({ message: "Product not found" });
     }
-   
-  
+
     return res.status(200).json({ message: "product updated", Product });
   } catch (error) {
     return res.status(500).json({ message: "Somethig went Wrong" });
@@ -149,11 +149,11 @@ export const deleteProduct = async (req, res) => {
   try {
     const Group = await GroupModel.findOne({ _id: groupId });
     if (!Group) {
-      return res.json({ message: "Group not Found" });
+      return res.json({ message: "Group not Found", success: false });
     }
     const Product = await ProductModel.findOne({ _id: productId });
     if (!Product) {
-      return res.json({ message: "Proudct not Found" });
+      return res.json({ message: "Proudct not Found", success: false });
     }
     await ProductModel.deleteOne({ _id: productId });
     // await ProductModel.save();
@@ -161,7 +161,7 @@ export const deleteProduct = async (req, res) => {
       (item) => item !== productId
     );
     await Group.save();
-    return res.json({ message: "Product removed" });
+    return res.json({ message: "Product removed", success: true });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "somethign went wrong" });
