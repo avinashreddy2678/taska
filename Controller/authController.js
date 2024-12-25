@@ -222,7 +222,7 @@ export const userUpdates = async (req, res) => {
         .status(400)
         .json({ message: "User not Found", success: false });
     }
-
+    // console.log(User.updatedAt, updatedAtQuery);
     if (new Date(User.updatedAt).getTime() === updatedAtQuery.getTime()) {
       return res.json({ message: "Data is Synced", success: true });
     }
@@ -266,7 +266,7 @@ const generateOtp = async (email) => {
 };
 
 export const handleLogout = async (req, res) => {
-  const { userId } = req.query;
+  const { userId } = req.body;
   if (!userId) {
     return res.status(400).json({ message: "User ID is required" });
   }

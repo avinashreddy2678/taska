@@ -95,8 +95,10 @@ export const AddPeopletoGroup = async (req, res) => {
     );
 
     const userToken = await FcmTokenModel.findOne({ userId });
+    console.log(userToken)
     if (userToken.fcmToken && userToken.isLoggedin) {
       const fcmTokens = [userToken.fcmToken];
+      console.log(fcmTokens)
       await sendNotification(
         "You're Invited to a Shelf!",
         ` 🎉 ${GroupExists.creatorName} added you to ${GroupExists.GroupName}! Tap to explore and start organizing together!`,
@@ -161,14 +163,21 @@ export const deleteGroupbyAdmin = async (req, res) => {
 
     const userIds = Group.Allusers.map((id) => id.userId.toString());
 
-    const fcms = await FcmTokenModel.find({
-      userId: { $in: userIds },
-      isLoggedin: true,
-    });
-    const fcmTokens = fcms.map((item) => item.fcmToken);
+    const UserTokens = await FcmTokenModel.find(
+      {
+        userId: { $in: userIds }, // Convert to strings
+      },
+      "fcmToken -_id isLoggedin"
+    );
+    // it will check if any null valies and remove
+    const fcmTokens = UserTokens.filter((user) => user.isLoggedin === true).map(
+      (user) => user.fcmToken
+    );
+
+    // const fcmTokens = fcms.map((item) => item.fcmToken);
     await sendNotification(
       "Group Alert",
-      ` ${Group.GroupName} is deleted by ${Group.creatorName}`,
+      ` ${Group.GroupName} Group is deleted by ${Group.creatorName}`,
       fcmTokens
     );
     await UserModel.updateMany(
@@ -176,14 +185,15 @@ export const deleteGroupbyAdmin = async (req, res) => {
       { $pull: { AllGroups: groupId } }
     );
 
-    const result = await UserModel.updateMany(
+    await UserModel.updateMany(
       { _id: { $in: userIds } },
       { $set: { updatedAt: new Date() } }
     );
 
-    await ProductModel.deleteMany({
+    const ressss = await ProductModel.deleteMany({
       _id: { $in: Group.AllProducts },
     });
+    console.log(ressss);
 
     await Group.deleteOne({ _id: groupId });
     return res.status(200).json({ message: "Group deleted successfully" });
@@ -239,12 +249,18 @@ export const leaveFromGroup = async (req, res) => {
     const userIds = group.Allusers.filter((user) => user.userId !== userId).map(
       (user) => user.userId
     );
-    const fcms = await FcmTokenModel.find({
-      userId: { $in: userIds },
-      isLoggedin: true,
-    });
 
-    const fcmTokens = fcms.map((item) => item.fcmToken);
+    const UserTokens = await FcmTokenModel.find(
+      {
+        userId: { $in: userIds },
+      },
+      "fcmToken -_id isLoggedin"
+    );
+
+    // it will check if any null valies and remove
+    const fcmTokens = UserTokens.filter((user) => user.isLoggedin === true).map(
+      (user) => user.fcmToken
+    );
 
     await GroupModel.findByIdAndUpdate(
       groupId,
@@ -263,7 +279,7 @@ export const leaveFromGroup = async (req, res) => {
       });
     }
     await sendNotification(
-      "New Group",
+      "Group Alert",
       `${user.username} left the ${group.GroupName} Group `,
       fcmTokens
     );

@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import FcmTokenModel from "../models/FcmTokenModel.js";
 import GroupModel from "../models/GroupModel.js";
 import ProductModel from "../models/ProductModel.js";
@@ -44,16 +45,16 @@ export const CreateProduct = async (req, res) => {
 
     const UserTokens = await FcmTokenModel.find(
       {
-        userId: { $in: filteredUserIds }, // Filter by user IDs
-        isLoggedIn: true, // Only select tokens where the user is logged in
+        userId: { $in: filteredUserIds }, // Convert to strings
       },
-      "fcmToken -_id" // Select only the fcmToken field and exclude _id
+      "fcmToken -_id isLoggedin"
     );
-
+    
     // it will check if any null valies and remove
-    const fcmTokens = UserTokens.map((user) => user.fcmToken).filter(
-      (item) => item
-    );
+    const fcmTokens = UserTokens
+    .filter((user) => user.isLoggedin === true).map((user) => user.fcmToken); 
+
+
 
     if (fcmTokens.length > 0) {
       await sendNotification(
