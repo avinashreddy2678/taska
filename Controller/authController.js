@@ -222,7 +222,8 @@ export const userUpdates = async (req, res) => {
         .status(400)
         .json({ message: "User not Found", success: false });
     }
-    if (User.updatedAt.getTime() == updatedAtQuery.getTime()) {
+
+    if (new Date(User.updatedAt).getTime() === updatedAtQuery.getTime()) {
       return res.json({ message: "Data is Synced", success: true });
     }
 
