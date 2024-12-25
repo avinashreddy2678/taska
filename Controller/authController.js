@@ -256,3 +256,19 @@ const generateOtp = async (email) => {
     return;
   }
 };
+
+export const handleLogout = async () => {
+  const { userId } = req.query;
+  try {
+    // Mark token as inactive instead of deleting (in case you want to keep historical records)
+    await FcmTokenModel.updateOne({ userId }, { $set: { isLoggedIn: false } });
+
+    // Alternatively, you can delete the token if you don't need to keep it
+    // await FcmTokenModel.deleteOne({ userId });
+
+    res.status(200).send("User logged out and token cleared");
+  } catch (error) {
+    console.error("Error during logout:", error);
+    res.status(500).send("Server error");
+  }
+};

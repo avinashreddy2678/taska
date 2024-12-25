@@ -3,6 +3,7 @@ import FcmTokenModel from "../models/FcmTokenModel.js";
 import GroupModel from "../models/GroupModel.js";
 import UserModel from "../models/UserModel.js";
 import { sendNotification } from "./fcmController.js";
+import ProductModel from "../models/ProductModel.js";
 
 export const CreateGroup = async (req, res) => {
   try {
@@ -95,7 +96,7 @@ export const AddPeopletoGroup = async (req, res) => {
 
     const userToken = await FcmTokenModel.findOne({ userId });
     console.log(userToken);
-    if (userToken.fcmToken) {
+    if (userToken.fcmToken && userToken.isLoggedin) {
       const fcmTokens = [userToken.fcmToken];
       await sendNotification(
         "New Group",
@@ -161,7 +162,7 @@ export const deleteGroupbyAdmin = async (req, res) => {
 
     const userIds = Group.Allusers.map((id) => id.userId.toString());
 
-    const fcms = await FcmTokenModel.find({ userId: { $in: userIds } });
+    const fcms = await FcmTokenModel.find({ userId: { $in: userIds },isLoggedin:true });
     const fcmTokens = fcms.map((item) => item.fcmToken);
     await sendNotification(
       "Group Alert",
@@ -177,7 +178,10 @@ export const deleteGroupbyAdmin = async (req, res) => {
       { _id: { $in: userIds } },
       { $set: { updatedAt: new Date() } }
     );
-    console.log(result);
+
+    await ProductModel.deleteMany({
+      _id: { $in: Group.AllProducts },
+    });
 
     await Group.deleteOne({ _id: groupId });
     return res.status(200).json({ message: "Group deleted successfully" });
@@ -234,7 +238,7 @@ export const leaveFromGroup = async (req, res) => {
       (user) => user.userId
     );
     const fcms = await FcmTokenModel.find({
-      userId: { $in: userIds },
+      userId: { $in: userIds },isLoggedin:true
     });
 
     const fcmTokens = fcms.map((item) => item.fcmToken);
@@ -273,5 +277,41 @@ export const leaveFromGroup = async (req, res) => {
       success: false,
       message: "An unexpected error occurred. Please try again later",
     });
+  }
+};
+
+export const removeUserbyAdmin = async (req, res) => {
+  const { adminId, groupId, userId } = req.query;
+  try {
+    const findGroup = await GroupModel.findOne({ _id: groupId });
+    if (!findGroup) {
+      return res.json({ message: "No Group Found", success: false });
+    }
+
+    // console.log(findGroup.createdby.toString(),"creator by")
+
+    if (adminId === userId) {
+      return res.json({ message: "You cant remove Yourself", success: false });
+    }
+
+    const checkAdmin = findGroup.createdby.toString() === adminId.toString();
+    if (!checkAdmin) {
+      return res.json({ message: "You are not Authorized", success: false });
+    }
+    const userExists = await GroupModel.updateOne(
+      { _id: groupId },
+      { $pull: { Allusers: { userId: userId } } },
+      { new: true }
+    );
+    if (!userExists) {
+      return res.json({ message: "User not Found", success: false });
+    }
+    return res.json({
+      message: "User removed success",
+      success: true,
+      group: findGroup,
+    });
+  } catch (error) {
+    return res.json({ message: "Something went Wrong" });
   }
 };

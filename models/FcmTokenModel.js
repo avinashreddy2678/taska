@@ -11,6 +11,10 @@ const FcmModel = mongoose.Schema({
   lastUpdated: {
     type: Date,
   },
+  isLoggedin: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 export default mongoose.models.Fcms || mongoose.model("Fcm", FcmModel);

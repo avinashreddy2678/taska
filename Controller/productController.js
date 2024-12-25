@@ -1,6 +1,7 @@
 import FcmTokenModel from "../models/FcmTokenModel.js";
 import GroupModel from "../models/GroupModel.js";
 import ProductModel from "../models/ProductModel.js";
+import UserModel from "../models/UserModel.js";
 import { GetUserById } from "./authController.js";
 import { sendNotification } from "./fcmController.js";
 
@@ -43,10 +44,12 @@ export const CreateProduct = async (req, res) => {
 
     const UserTokens = await FcmTokenModel.find(
       {
-        userId: { $in: filteredUserIds },
+        userId: { $in: filteredUserIds }, // Filter by user IDs
+        isLoggedIn: true, // Only select tokens where the user is logged in
       },
-      "fcmToken -_id"
+      "fcmToken -_id" // Select only the fcmToken field and exclude _id
     );
+    
 
     // it will check if any null valies and remove
     const fcmTokens = UserTokens.map((user) => user.fcmToken).filter(
@@ -160,6 +163,13 @@ export const deleteProduct = async (req, res) => {
     Group.AllProducts = await Group.AllProducts.filter(
       (item) => item !== productId
     );
+
+    await UserModel.updateMany(
+      { _id: { $in: Group.Allusers } },
+      { $pull: { AllProducts: productId } },
+      { new: true }
+    );
+
     await Group.save();
     return res.json({ message: "Product removed", success: true });
   } catch (error) {
