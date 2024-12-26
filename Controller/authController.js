@@ -101,7 +101,33 @@ export const verifyOtp = async (req, res) => {
       ...existingUser.toObject(),
       password: undefined,
     };
-
+    let subject = `Welcome to Shelfy, ${userExists.username}! 🌟`;
+    let content = `"<html><body style='font-family: Arial, sans-serif; color: #333; line-height: 1.6;'>
+<h2 style='text-align: center; color: #4CAF50;'>Hi ${userExists.username},</h2>
+<p>Welcome to <strong>Shelfy</strong>—your partner for smarter tracking and organized living! We're thrilled to have you on board.</p>
+<h3>What You Can Do with Shelfy:</h3>
+<ul>
+  <li>✅ <strong>Track Expiry Dates:</strong> Add products by scanning or manual entry to ensure you never miss consuming them at their best.</li>
+  <li>✅ <strong>Create Groups for Better Management:</strong> Organize products into categories like perishables, snacks, or beverages.</li>
+  <li>✅ <strong>Collaborate Seamlessly:</strong> Invite family, friends, or colleagues to groups and track shared items together.</li>
+  <li>✅ <strong>Analyze Product Usage:</strong> Access a dedicated analytics page to review usage trends, reduce waste, and save smarter.</li>
+</ul>
+<h3>Get Started in 3 Simple Steps:</h3>
+<ol>
+  <li>1️⃣ <strong>Add Products:</strong> Scan the barcode or manually input details to keep track of expiry dates.</li>
+  <li>2️⃣ <strong>Create Groups:</strong> Organize items into custom groups (e.g., fruits, packaged foods) and invite others to collaborate.</li>
+  <li>3️⃣ <strong>Track & Stay Notified:</strong> Stay updated with reminders before expiry dates and insights into your product usage.</li>
+</ol>
+<p>With <strong>Shelfy</strong>, you're not just staying organized; you're making conscious choices for a more efficient and sustainable lifestyle.</p>
+<p>If you have any questions, need support, or just want to say hi, we’re here for you at <a href='mailto:support@shelfy.com' style='color: #4CAF50;'>support@shelfy.com</a>.</p>
+<p style='text-align: center;'>
+  <a href='#' style='display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: #fff; text-decoration: none; border-radius: 5px;'>Launch the app now</a>
+</p>
+<p>Here’s to a clutter-free, waste-free journey!</p>
+<p>Warm regards,<br>The Shelfy Team</p>
+</body></html>"
+`;
+    await sendMail(userExists.email, subject, content);
     return res.status(200).json({
       message: "Otp Verified successful",
       user: userWithoutPassword,
@@ -196,8 +222,35 @@ export const ResendOtp = async (req, res) => {
     if (!getOtp || getOtp.expiresIn < new Date()) {
       await generateOtp(email);
     } else {
-      console.log(email, getOtp);
-      await sendMail(email, getOtp.otp);
+      let subject = "Welcome to Shelfy! Here's Your OTP";
+      let content = `<div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f4f4f4; border-radius: 10px;">
+        <h2 style="text-align: center; color: #2d88e4;">Thank you for joining Shelfy</h2>
+        <p style="font-size: 16px;">
+            Your ultimate companion for smarter product tracking and consumption.
+        </p>
+        <p style="font-size: 16px;">
+            To complete your registration, please use the following One-Time Password (OTP):
+        </p>
+        <h3 style="font-size: 20px; font-weight: bold; color: #e74c3c; text-align: center;">${getOtp.otp}</h3>
+        <p style="font-size: 16px;">
+            This code is valid for the next 10 minutes. If you didn't request this, you can safely ignore this email.
+        </p>
+        <p style="font-size: 16px;">
+            We're thrilled to have you on board and can't wait for you to experience all that Shelfy has to offer—streamlined organization, waste reduction, and smarter collaboration.
+        </p>
+        <p style="font-size: 16px;">
+            If you have any questions, feel free to reach out to our support team at 
+            <a href="mailto:support@shelfy.com" style="color: #2d88e4;">support@shelfy.com</a>.
+        </p>
+        <p style="font-size: 16px;">
+            Enjoy your journey with Shelfy!
+        </p>
+        <p style="font-size: 16px; font-weight: bold;">
+            Warm regards,<br>
+            The Shelfy Team
+        </p>
+    </div> `;
+      await sendMail(email, subject, content);
     }
 
     return res.json({ message: "Otp sent to Mail", success: true });
@@ -258,7 +311,35 @@ const generateOtp = async (email) => {
       expiresIn,
     });
     await res.save();
-    await sendMail(email, newOtp);
+    let subject = "Welcome to Shelfy! Here's Your OTP";
+    let content = `<div style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f4f4f4; border-radius: 10px;">
+        <h2 style="text-align: center; color: #2d88e4;">Thank you for joining Shelfy</h2>
+        <p style="font-size: 16px;">
+            Your ultimate companion for smarter product tracking and consumption.
+        </p>
+        <p style="font-size: 16px;">
+            To complete your registration, please use the following One-Time Password (OTP):
+        </p>
+        <h3 style="font-size: 20px; font-weight: bold; color: #e74c3c; text-align: center;">${newOtp}</h3>
+        <p style="font-size: 16px;">
+            This code is valid for the next 10 minutes. If you didn't request this, you can safely ignore this email.
+        </p>
+        <p style="font-size: 16px;">
+            We're thrilled to have you on board and can't wait for you to experience all that Shelfy has to offer—streamlined organization, waste reduction, and smarter collaboration.
+        </p>
+        <p style="font-size: 16px;">
+            If you have any questions, feel free to reach out to our support team at 
+            <a href="mailto:support@shelfy.com" style="color: #2d88e4;">support@shelfy.com</a>.
+        </p>
+        <p style="font-size: 16px;">
+            Enjoy your journey with Shelfy!
+        </p>
+        <p style="font-size: 16px; font-weight: bold;">
+            Warm regards,<br>
+            The Shelfy Team
+        </p>
+    </div> `;
+    await sendMail(email, subject, content);
   } catch (error) {
     console.log(error);
     return;

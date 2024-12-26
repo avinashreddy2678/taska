@@ -10,7 +10,7 @@ import { GroupRouter } from "./routes/groupRouter.js";
 import { VerifyUser } from "./middleware/verifyUser.js";
 import { fcmRouter } from "./routes/fcmRoute.js";
 import { userDetailRouter } from "./routes/userRoute.js";
-import cron from "node-cron";
+
 const app = express();
 app.use(Cors());
 app.use(helmet());

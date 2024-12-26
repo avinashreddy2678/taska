@@ -95,7 +95,7 @@ export const AddPeopletoGroup = async (req, res) => {
     );
 
     const userToken = await FcmTokenModel.findOne({ userId });
-    console.log(userToken)
+
     if (userToken.fcmToken && userToken.isLoggedin) {
       const fcmTokens = [userToken.fcmToken];
       console.log(fcmTokens)
