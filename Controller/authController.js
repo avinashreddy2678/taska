@@ -101,9 +101,9 @@ export const verifyOtp = async (req, res) => {
       ...existingUser.toObject(),
       password: undefined,
     };
-    let subject = `Welcome to Shelfy, ${userExists.username}! 🌟`;
+    let subject = `Welcome to Shelfy, ${existingUser.username}! 🌟`;
     let content = `"<html><body style='font-family: Arial, sans-serif; color: #333; line-height: 1.6;'>
-<h2 style='text-align: center; color: #4CAF50;'>Hi ${userExists.username},</h2>
+<h2 style='text-align: center; color: #4CAF50;'>Hi ${existingUser.username},</h2>
 <p>Welcome to <strong>Shelfy</strong>—your partner for smarter tracking and organized living! We're thrilled to have you on board.</p>
 <h3>What You Can Do with Shelfy:</h3>
 <ul>
