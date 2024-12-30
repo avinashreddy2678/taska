@@ -35,5 +35,5 @@ app.use("/user", VerifyUser, userDetailRouter);
 
 
 app.listen(4000,'0.0.0.0', () => {
-  console.log("Server is running"+process.env.PORT);
+  console.log("Server is running");
 });
