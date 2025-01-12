@@ -89,7 +89,7 @@ export const changeProductStatus = async (req, res) => {
       { new: true }
     );
     if (!Product) {
-      return res.status(400).json({ message: "Product not Found",success:true });
+      return res.status(400).json({ message: "Product not Found" });
     }
     const Group = await GroupModel.findByIdAndUpdate(
       { _id: groupId },
@@ -100,7 +100,7 @@ export const changeProductStatus = async (req, res) => {
       return res.status(400).json({ message: "Group Not Found" });
     }
     await Group.save();
-    return res.status(200).json({ message: "Product updated" });
+    return res.status(200).json({ message: "Product updated",success:true });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "something went Wrong" });
