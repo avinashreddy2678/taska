@@ -89,7 +89,7 @@ export const changeProductStatus = async (req, res) => {
       { new: true }
     );
     if (!Product) {
-      return res.status(400).json({ message: "Product not Found" });
+      return res.status(400).json({ message: "Product not Found",success:true });
     }
     const Group = await GroupModel.findByIdAndUpdate(
       { _id: groupId },
